@@ -40,7 +40,7 @@
     Source: https://blogs.msdn.microsoft.com/neo/2018/04/21/aws-obtain-blendedcost-billing-data/
 
 .FUNCTIONALITY
-    Export some of AWS resources to HTML
+    Export AWS resources to HTML
    
     Script by         : Ketan Thakkar (KetanBhut@live.com)
     Script version    : v1.0
