@@ -40,11 +40,11 @@
     Source: https://blogs.msdn.microsoft.com/neo/2018/04/21/aws-obtain-blendedcost-billing-data/
 
 .FUNCTIONALITY
-    Export AWS resources to HTML
+    Export some of AWS resources to HTML
    
     Script by         : Ketan Thakkar (KetanBhut@live.com)
-    Script version    : v1.0
-    Release date      : 11-May-2018
+    Script version    : v2.0
+    Release date      : 15-May-2018
 #>
 
 
@@ -55,11 +55,12 @@ function TDwithHeading{
     This function will return a table which can be used anywhere to embed in HTML
 #>
     param(
-        [string]$tdString
+        [string]$tdString,
+        [string]$tableBGColor = "rgb(0,0,111)"
     )
  
     $lineTable = "
-                <table width='100%' style='background-color:rgb(0,0,111);color:white;'>
+                <table width='100%' style='background-color: $tableBGColor ;color:white;'>
                   <tr>
                     <td style='border:none;'><hr /></td>
                     <td style='width:1px; padding: 0 10px; border:none; white-space: nowrap;'>$tdString</td>
@@ -159,55 +160,6 @@ Function Get-EC2VolumeHTML {
             $objTable += "<tr> <td>Attachment InstanceId: "         ; $objTable += "<td> $($obj.Attachment.instanceid) </tr>" 
             $objTable += "<tr> <td>Attachment State: "           ; $objTable += "<td> $($obj.Attachment.state.value) </tr>" 
         
-            $objTable += "</table>"    
-            $Output+= $objTable
-        }
-    }
-    return $Output
-}
-    
-
-
-Function Get-EC2SecurityGroupHTML {
-<#
-    Function to return EC2 Security Group details HTML format. 
-    It will return $Output which contains all Security details acroos regions in HTML.
-#>
-    $Output = ""
-    foreach ($Region in $awsRegions){
-        
-        $SecurityGroups = Get-EC2SecurityGroup -Region $region 
-        if($SecurityGroups -ne $null){
-            $Output +="<h4>"
-            $Output += TDwithHeading "EC2 Security Groups for the Region: $(($region.Region).ToUpper()) <> $($Region.Name)"
-            $Output +="</h4>"
-        }
-
-        foreach ($obj in $SecurityGroups){
-            $objTable =""
-            $objTable +="<style>td {border-bottom: 1px solid black;}</style>"
-
-            $objTable += "<table style='border-top: 3px solid black;border-top-color:green'>"
-
-            $objTable += "<tr> <td>Description: "        ; $objTable += "<td> $($obj.Description) </tr>" 
-            $objTable += "<tr> <td>GroupId: "        ; $objTable += "<td> $($obj.GroupId) </tr>" 
-            $objTable += "<tr> <td>Group Name: "    ; $objTable += "<td> $($obj.GroupName) </tr>" 
-            $objTable += "<tr> <td>VpcId: " ; $objTable += "<td> $($obj.VpcId) </tr>" 
-
-            $objTable += "<tr> <td colspan=2 > ==> Inbound: " ; $objTable += "</tr>" 
-            foreach($inboundPermissions in $obj.IpPermissions) {
-                $objTable += "<tr> <td>Port Range: " ; $objTable += "<td> $($inboundPermissions.FromPort) - $($inboundPermissions.ToPort)</tr>"     
-                $objTable += "<tr> <td>&nbsp;&nbsp; Protocol: " ; $objTable += "<td> $($inboundPermissions.IpProtocol) </tr>"     
-                $objTable += "<tr> <td>&nbsp;&nbsp; IPv4 Range: " ; $objTable += "<td> $($inboundPermissions.Ipv4Ranges.CidrIp) </tr>"   
-            }
-            $objTable += "<tr> <td colspan=2>==>  Outbound: " ; $objTable += "</tr>" 
-            foreach($outboundPermissions in $obj.IpPermissionsEgress) {
-                $objTable += "<tr> <td>Port Range: " ; $objTable += "<td> $($outboundPermissions.FromPort) - $($outboundPermissions.ToPort)</tr>"     
-                $objTable += "<tr> <td>&nbsp;&nbsp; Protocol: " ; $objTable += "<td> $($outboundPermissions.IpProtocol) </tr>"     
-                $objTable += "<tr> <td>&nbsp;&nbsp; IPv4 Range: " ; $objTable += "<td> $($outboundPermissions.Ipv4Ranges.CidrIp) </tr>"   
-            }
-
-
             $objTable += "</table>"    
             $Output+= $objTable
         }
@@ -427,13 +379,196 @@ Function Get-ELBLoadBalancerHTML {
 
 
 
+Function Get-EC2NicHTML {
+<#
+    Function to return EC2 Network Interface details in HTML format. 
+    It will return $Output which contains all EC2 Network Interface across regions in HTML.
+#>
+    $Output = ""
+    foreach ($Region in $awsRegions){
+        
+        $EC2Nics = Get-EC2NetworkInterface -Region $region 
+        if($EC2Nics -ne $null){
+            $Output +="<h4>"
+            $Output += TDwithHeading "EC2 Network Interfaces in Region: $(($region.Region).ToUpper()) <> $($Region.Name)"
+            $Output +="</h4>"
+        }
+
+        foreach ($obj in $EC2Nics){
+            $objTable =""
+            $objTable +="<style>td {border-bottom: 1px solid black;}</style>"
+
+            $objTable += "<table style='border-top: 3px solid black;border-top-color:green'>"
+
+            $objTable += "<tr> <td>RequesterId: "        ; $objTable += "<td> $($obj.RequesterId) </tr>" 
+            $objTable += "<tr> <td>PrivateIpAddress: "        ; $objTable += "<td> $($obj.PrivateIpAddress) </tr>" 
+            $objTable += "<tr> <td>SubnetId: "        ; $objTable += "<td> $($obj.SubnetId) </tr>" 
+            $objTable += "<tr> <td>VpcId: "        ; $objTable += "<td> $($obj.VpcId) </tr>" 
+            $objTable += "<tr> <td>MacAddress: "        ; $objTable += "<td> $($obj.MacAddress) </tr>" 
+            $objTable += "<tr> <td>Status: "        ; $objTable += "<td> $($obj.Status) </tr>" 
+            $objTable += "<tr> <td>Association.PublicDnsName: "        ; $objTable += "<td> $($obj.Association.PublicDnsName) </tr>" 
+            $objTable += "<tr> <td>Association.PublicIp: "        ; $objTable += "<td> $($obj.Association.PublicIp) </tr>" 
+            $objTable += "<tr> <td colspan=2> <input type=button onclick=`"alert('hey.. you clicked')`" value='click me'></tr>" 
+
+            $objTable += "</table>"    
+            $Output+= $objTable
+        }
+    }
+    return $Output
+}
+
+
+
+
+Function Get-IAMRolesHTML {
+<#
+    Function to return IAM Roles details in HTML format. 
+    It will return $Output which contains all IAM Roles across regions in HTML.
+#>
+    $Output = ""
+        
+    $IAMRoles = Get-IAMRoleList
+    if($IAMRoles -ne $null){
+        $Output +="<h4>"
+        $Output += TDwithHeading "IAM Roles "
+        $Output +="</h4>"
+    }
+    foreach ($obj in $IAMRoles){
+        $objTable =""
+        $objTable +="<style>td {border-bottom: 1px solid black;}</style>"
+        $objTable += "<table style='border-top: 3px solid black;border-top-color:green'>"
+
+        $objTable += "<tr> <td>RoleId: "        ; $objTable += "<td>  $($obj.RoleId) </tr>" 
+        $objTable += "<tr> <td>RoleName: "        ; $objTable += "<td>  $($obj.RoleName) </tr>" 
+        $objTable += "<tr> <td>Description: "        ; $objTable += "<td>  $($obj.Description) </tr>" 
+        $objTable += "<tr> <td>CreateDate: "        ; $objTable += "<td>  $($obj.CreateDate) </tr>" 
+
+        $objTable += "</table>"    
+        $Output+= $objTable
+    }
+    return $Output
+}
+
+
+
+
+
+
+Function Get-S3ObjectHTML {
+<#
+    Function to return S3 Objects details in HTML format. 
+    It will return $Output which contains all S3 Objects across regions in HTML.
+
+    
+#>
+    $Output = ""
+    
+        
+    $s3Buckets = Get-S3Bucket
+    if($s3Buckets -ne $null){
+        $Output +="<h4>"
+        $Output += TDwithHeading "S3 bucket objects "
+        $Output +="</h4>"
+    }
+        
+    foreach($bucket in $s3Buckets) {
+        $bucketLocation = Get-S3BucketLocation -BucketName $bucket.BucketName
+        if([string]::IsNullOrEmpty($bucketLocation.Value)) {
+            #As per https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketGETlocation.html
+            #" When the bucket's region is US East (N. Virginia), Amazon S3 returns an empty string for the bucket's region: "
+            $bucketRegionValue = 'us-east-1'
+        }
+        else {
+            $bucketRegionValue =$bucketLocation.Value
+        }
+
+        $objTable =""
+        $objTable +="<style>td {border-bottom: 1px solid black;}</style>"
+        $objTable += "<table style='border-top: 3px solid black;border-top-color:green'>"
+        $objTable += "<tr> <td>BucketName: "        ; $objTable += "<td> $($bucket.BucketName)</tr>"      
+        $objTable += "<tr> <td>Bucket Region: "        ; $objTable += "<td> $($bucketRegionValue)</tr>"
+        try {
+            $bucketObjects = Get-S3Object -BucketName $bucket.BucketName
+        }
+        catch {
+            $objTable += "<tr> <td><font color='red'> Error fetching objects</font>"        ; $objTable += "<td> $_.Exception.Message</tr>"      
+            Write-Verbose $_.Exception.Message
+        }
+        foreach ($obj in $bucketObjects){
+            $objTable += "<tr> <td>&nbsp;&nbsp; Key: "        ; $objTable += "<td> $($obj.Key) </tr>" 
+            $objTable += "<tr> <td>&nbsp;&nbsp; &nbsp;&nbsp; StorageClass: "        ; $objTable += "<td> $($obj.StorageClass) </tr>" 
+            $objTable += "<tr> <td>&nbsp;&nbsp; &nbsp;&nbsp; Size: "        ; $objTable += "<td>  $(DisplayInBytes $obj.Size) </tr>" 
+        }
+        $objTable += "</table>"    
+        $Output+= $objTable
+    }
+    return $Output
+}
+
+
+
+Function Get-EC2SecurityGroupHTML {
+<#
+    Function to return EC2 Security Group details HTML format. 
+    It will return $Output which contains all Security details acroos regions in HTML.
+#>
+    $Output = ""
+    foreach ($Region in $awsRegions){
+        
+        $SecurityGroups = Get-EC2SecurityGroup -Region $region 
+        if($SecurityGroups -ne $null){
+            $Output +="<h4>"
+            $Output += TDwithHeading -tdString "EC2 Security Groups for the Region: $(($region.Region).ToUpper()) <> $($Region.Name)" -tableBGColor "rgb(150,10,10)"
+            $Output +="</h4>"
+        }
+
+        foreach ($obj in $SecurityGroups){
+            $objTable =""
+            $objTable +="<style>td {border-bottom: 1px solid black;}</style>"
+
+            $objTable += "<table style='border-top: 3px solid black;border-top-color:green'>"
+
+            $objTable += "<tr> <td>Description: "        ; $objTable += "<td> $($obj.Description) </tr>" 
+            $objTable += "<tr> <td>GroupId: "        ; $objTable += "<td> $($obj.GroupId) </tr>" 
+            $objTable += "<tr> <td>Group Name: "    ; $objTable += "<td> $($obj.GroupName) </tr>" 
+            $objTable += "<tr> <td>VpcId: " ; $objTable += "<td> $($obj.VpcId) </tr>" 
+
+            $objTable += "<tr> <td colspan=2 > ==> Inbound: " ; $objTable += "</tr>" 
+            foreach($inboundPermissions in $obj.IpPermissions) {
+                $objTable += "<tr> <td>Port Range: " ; $objTable += "<td> $($inboundPermissions.FromPort) - $($inboundPermissions.ToPort)</tr>"     
+                $objTable += "<tr> <td>&nbsp;&nbsp; Protocol: " ; $objTable += "<td> $($inboundPermissions.IpProtocol) </tr>"     
+                $objTable += "<tr> <td>&nbsp;&nbsp; IPv4 Range: " ; $objTable += "<td> $($inboundPermissions.Ipv4Ranges.CidrIp) </tr>"   
+            }
+            $objTable += "<tr> <td colspan=2>==>  Outbound: " ; $objTable += "</tr>" 
+            foreach($outboundPermissions in $obj.IpPermissionsEgress) {
+                $objTable += "<tr> <td>Port Range: " ; $objTable += "<td> $($outboundPermissions.FromPort) - $($outboundPermissions.ToPort)</tr>"     
+                $objTable += "<tr> <td>&nbsp;&nbsp; Protocol: " ; $objTable += "<td> $($outboundPermissions.IpProtocol) </tr>"     
+                $objTable += "<tr> <td>&nbsp;&nbsp; IPv4 Range: " ; $objTable += "<td> $($outboundPermissions.Ipv4Ranges.CidrIp) </tr>"   
+            }
+
+
+            $objTable += "</table>"    
+            $Output+= $objTable
+        }
+    }
+    return $Output
+}
+    
+
 $mainHtmlBody = Get-EC2InstanceHTML
 $mainHtmlBody += Get-EC2VolumeHTML
-$mainHtmlBody += Get-EC2SecurityGroupHTML
 $mainHtmlBody += Get-EC2KeyPairHTML
 $mainHtmlBody += Get-EFSFileSystemHTML
 $mainHtmlBody += Get-ELB2HTML
 $mainHtmlBody += Get-ELB2TargetGroupHTML
 $mainHtmlBody += Get-ELBLoadBalancerHTML
+$mainHtmlBody += Get-EC2NicHTML
+$mainHtmlBody += Get-IAMRolesHTML
+$mainHtmlBody += Get-S3ObjectHTML
 
-ConvertTo-Html -body $mainHtmlBody -Title "some meh"|Out-File "$PSScriptRoot\abcd.html"
+$mainHtmlBody += Get-EC2SecurityGroupHTML
+
+
+#Create html and start the page
+ConvertTo-Html -body $mainHtmlBody -Title "AWS Resources"|Out-File "$PSScriptRoot\abcd.html"
+start-process "$PSScriptRoot\abcd.html"
