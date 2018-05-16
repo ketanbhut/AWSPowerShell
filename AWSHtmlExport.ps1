@@ -66,7 +66,7 @@ function TDwithHeading{
 function DisplayInBytes($num) 
 {
     ##########
-    # Utilizing code from https://stackoverflow.com/users/11421/mladen-mihajlovic
+    # Utilizing code from mladen-mihajlovic
     # As per the stakeoverflow query https://stackoverflow.com/questions/24616806/powershell-display-files-size-as-kb-mb-or-gb/24617034#24617034: 
     # in order to display size in mb, gb etc.
     ##########
