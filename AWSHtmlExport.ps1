@@ -1,14 +1,9 @@
-﻿<#
+<#
 .Synopsis
     Export AWS resources to an HTML file for reporting 
 
 .DESCRIPTION
-    The Script will ask for the CSV path where credentials for the user is stored. The credentials file would look like this:
-    
-    User name,Password,Access key ID,Secret access key,Console login link
-    myAPIUser,[*0s5F5Yds9N,AKIdJaJ3BTK242HGBJ,kW9)H5VtESj&CqXO#bKdmj#Q9y877Vs0Ij0sZRuejBw,https://myaws-babysteps.signin.aws.amazon.com/console
-    
-    It will export below resources, assuming user provided has access, for all regions:
+    The Script will export below resources, assuming user provided has access, for all regions:
     1.  EC2 Instances 
     2.  EC2 Security Groups
     3.  EC2 KeyPairs
@@ -26,10 +21,7 @@
     15. CloudFront Origin Access Identities
 
 .EXAMPLE
-   .\AWSHtmlExport.ps1 E:\myAPIUser_credentials.csv
-
-.INPUTS
-    CSV file with User credentials for API access. This is the same file that is saved while creating User for API access
+   .\AWSHtmlExport.ps1
 
 .OUTPUTS
     Html file saved at $PSScriptRoot
@@ -40,7 +32,7 @@
     Source: https://blogs.msdn.microsoft.com/neo/2018/04/21/aws-obtain-blendedcost-billing-data/
 
 .FUNCTIONALITY
-    Export some of AWS resources to HTML
+    Export AWS resources to HTML
    
     Script by         : Ketan Thakkar (KetanBhut@live.com)
     Script version    : v2.0
