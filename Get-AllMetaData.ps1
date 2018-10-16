@@ -1,46 +1,50 @@
-﻿<#PSScriptInfo
- 
-.VERSION 1.0
- 
-.GUID afa7bc31-e496-4035-9a64-91b033e9ce2e
- 
-.AUTHOR thaketan@amazon.com
- 
-.COMPANYNAME Amazon
- 
-.COPYRIGHT 2017 Amazon
- 
-.TAGS EC2 Amazon AWS
- 
-.LICENSEURI https://code.amazon.com/licenseuri
- 
-.PROJECTURI https://code.amazon.com/projecturigoeshere
- 
-.ICONURI
- 
-.EXTERNALMODULEDEPENDENCIES AWSPowerShell
- 
-.REQUIREDSCRIPTS
- 
-.EXTERNALSCRIPTDEPENDENCIES
- 
-.RELEASENOTES
- 
- 
-#>
- 
 #Requires -Module AWSPowerShell
+<#PSScriptInfo
 
-<#
+.VERSION 1.0
 
+.GUID 1cf016fc-8860-46df-bc50-b5cd08c1b7a0
+
+.AUTHOR thaketan
+
+.COMPANYNAME Amazon
+
+.COPYRIGHT 2017 Amazon
+
+.TAGS EC2 Amazon AWS
+
+.LICENSEURI https://code.amazon.com/licenseuri
+
+.PROJECTURI https://github.com/ketanbhut/AWSPowerShell/blob/master/Get-AllMetaData.ps1
+
+.ICONURI 
+
+.EXTERNALMODULEDEPENDENCIES AWSPowerShell
+
+.REQUIREDSCRIPTS 
+
+.EXTERNALSCRIPTDEPENDENCIES 
+
+.RELEASENOTES
+
+
+#>
+
+<# 
 .SYNOPSIS
     Displays EC2-metadata
 
-.DESCRIPTION
+.DESCRIPTION 
     This script collects all instance meta-data from http://169.254.169.254/latest/meta-data
     and extracts values of each property. We can filter it and/or can 
     include all network information, and returns a custom collection psobject
-    This Script is supposed to be run within the EC2-Windows Instance. 
+    This Script is supposed to be run within the EC2-Windows Instance.  
+
+#> 
+
+
+
+<#
 
 .EXAMPLES
     1. PS C:\Users\kt\Documents> .\Get-AllMetaData.ps1 public
